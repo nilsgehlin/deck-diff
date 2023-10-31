@@ -16,7 +16,7 @@ public class CompareDecks
 
     public static string RenderCardList(IEnumerable<Card> cardList)
     {
-        return String.Join(Environment.NewLine, cardList.Select(card => $"{card.Qty} {card.Name}"));
+        return string.Join(Environment.NewLine, cardList.Select(card => $"{card.Qty} {card.Name}"));
     }
 
     public static List<Card> ParseDeck(string deck)

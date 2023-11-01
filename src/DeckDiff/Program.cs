@@ -1,11 +1,12 @@
 ﻿using DeckDiff;
 using System.CommandLine;
+using System.IO;
 
 namespace DeckDiff;
 
 class Program
 {
-    static int Main(string[] args)
+    static async Task<int> Main(string[] args)
     {
         var oldDeckOption = new Option<FileInfo?>(
                   name: "--old-deck-file",
@@ -22,11 +23,26 @@ class Program
         rootCommand.AddOption(oldDeckOption);
         rootCommand.AddOption(newDeckOption);
 
-        rootCommand.SetHandler((file) =>
+        string? oldDeck = "";
+        string? newDeck = "";
+
+        rootCommand.SetHandler((oldDeckFile, newDeckFile) =>
             {
-                ReadFile(file!);
+                if (oldDeckFile is not null)
+                {
+                    oldDeck = File.ReadAllText(oldDeckFile.FullName);
+                    Console.WriteLine(oldDeck);
+                }
+                if (newDeckFile is not null)
+                {
+                    newDeck = File.ReadAllText(newDeckFile.FullName);
+                    Console.WriteLine(newDeck);
+                }
             },
-            oldDeckOption);
+            oldDeckOption, newDeckOption);
+
+        Console.WriteLine(oldDeck);
+        Console.WriteLine(newDeck);
 
         return await rootCommand.InvokeAsync(args);
     }

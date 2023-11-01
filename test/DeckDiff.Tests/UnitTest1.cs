@@ -268,7 +268,7 @@ public class UnitTest1
         1 Vessel of Nascency
         1 Zombie Infestation
         """;
-        var result = CompareDecks.Compare(oldDeck, newDeck);
+        var result = Deck.Compare(oldDeck, newDeck);
         Assert.Equal(toRemove, result.toRemove);
         Assert.Equal(toAdd, result.toAdd);
     }

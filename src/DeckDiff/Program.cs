@@ -23,26 +23,20 @@ class Program
         rootCommand.AddOption(oldDeckOption);
         rootCommand.AddOption(newDeckOption);
 
-        string? oldDeck = "";
-        string? newDeck = "";
-
         rootCommand.SetHandler((oldDeckFile, newDeckFile) =>
             {
-                if (oldDeckFile is not null)
+                if (oldDeckFile is not null && newDeckFile is not null)
                 {
-                    oldDeck = File.ReadAllText(oldDeckFile.FullName);
-                    Console.WriteLine(oldDeck);
-                }
-                if (newDeckFile is not null)
-                {
-                    newDeck = File.ReadAllText(newDeckFile.FullName);
-                    Console.WriteLine(newDeck);
+                    var oldDeck = File.ReadAllText(oldDeckFile.FullName);
+                    var newDeck = File.ReadAllText(newDeckFile.FullName);
+
+                    (string toRemove, string toAdd) = Deck.Compare(oldDeck, newDeck);
+
+                    File.WriteAllText($"./{Path.GetFileNameWithoutExtension(oldDeckFile.Name)}-remove.txt", toRemove);
+                    File.WriteAllText($"./{Path.GetFileNameWithoutExtension(newDeckFile.Name)}-add.txt", toAdd);
                 }
             },
             oldDeckOption, newDeckOption);
-
-        Console.WriteLine(oldDeck);
-        Console.WriteLine(newDeck);
 
         return await rootCommand.InvokeAsync(args);
     }

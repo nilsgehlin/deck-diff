@@ -224,6 +224,7 @@ public class UnitTest1
 
     private readonly string _toAddExpected =
         """
+        1 Archetype of Endurance
         1 Boon of the Spirit Realm
         1 Circle of the Land Druid
         1 Codex Shredder
@@ -286,13 +287,13 @@ public class UnitTest1
     {
         string[] args =
             {
-                "--old-deck-file", @".\resources\input\Anikthea.txt",
-                "--new-deck-file", @".\resources\input\Anikthea-2.txt",
-                "--output-dir", @".\output"
+                "--old-deck-file", @"..\..\..\resources\input\Anikthea.txt",
+                "--new-deck-file", @"..\..\..\resources\input\Anikthea-2.txt",
+                "--output-dir", @"..\..\..\output"
             };
-        await DeckDiff.Program.Main(args);
-        var toRemoveResult = File.ReadAllText(@".\output\Anikthea-remove.txt");
-        var toAddResult = File.ReadAllText(@".\output\Anikthea-2-add.txt");
+        await Program.Main(args);
+        var toRemoveResult = File.ReadAllText(@"..\..\..\output\Anikthea-remove.txt");
+        var toAddResult = File.ReadAllText(@"..\..\..\output\Anikthea-2-add.txt");
         Assert.Equal(_toRemoveExpected, toRemoveResult);
         Assert.Equal(_toAddExpected, toAddResult);
     }

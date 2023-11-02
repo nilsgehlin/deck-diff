@@ -1,4 +1,5 @@
-﻿using System.CommandLine;
+﻿using System;
+using System.CommandLine;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -26,6 +27,7 @@ public class Program
 
         rootCommand.AddOption(oldDeckOption);
         rootCommand.AddOption(newDeckOption);
+        rootCommand.AddOption(outputDirOption);
 
         rootCommand.SetHandler((oldDeckFile, newDeckFile, outputDir) =>
             {
@@ -35,6 +37,7 @@ public class Program
                     var newDeck = File.ReadAllText(newDeckFile.FullName);
 
                     (string toRemove, string toAdd) = Deck.Compare(oldDeck, newDeck);
+                    Console.WriteLine(outputDir.FullName);
 
                     File.WriteAllText($"{outputDir.FullName}/{Path.GetFileNameWithoutExtension(oldDeckFile.Name)}-remove.txt", toRemove);
                     File.WriteAllText($"{outputDir.FullName}/{Path.GetFileNameWithoutExtension(newDeckFile.Name)}-add.txt", toAdd);

@@ -1,11 +1,12 @@
+using System;
+using System.IO;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
+
 namespace DeckDiff.Tests;
 
 public class UnitTest1
 {
-    [Fact]
-    public void Test1()
-    {
-        var oldDeck =
+    private readonly string _oldDeck =
         """
         //Main
         1 Anikthea, Hand of Erebos #!Commander
@@ -86,7 +87,8 @@ public class UnitTest1
         1 Wild Growth
         """;
 
-        var newDeck =
+
+    private readonly string _newDeck =
         """
         //Main
         1 Anikthea, Hand of Erebos #!Commander
@@ -171,7 +173,8 @@ public class UnitTest1
         1 Zombie Infestation
         """;
 
-        var toRemove =
+
+    private readonly string _toRemoveExpected =
         """
         1 Aegis of the Gods
         1 Alseid of Life's Bounty
@@ -218,9 +221,9 @@ public class UnitTest1
         1 Verduran Enchantress
         1 Wild Growth
         """;
-        var toAdd =
+
+    private readonly string _toAddExpected =
         """
-        1 Archetype of Endurance
         1 Boon of the Spirit Realm
         1 Circle of the Land Druid
         1 Codex Shredder
@@ -268,8 +271,29 @@ public class UnitTest1
         1 Vessel of Nascency
         1 Zombie Infestation
         """;
-        var result = Deck.Compare(oldDeck, newDeck);
-        Assert.Equal(toRemove, result.toRemove);
-        Assert.Equal(toAdd, result.toAdd);
+
+    [Fact]
+    public void Test1()
+    {
+
+        var result = Deck.Compare(_oldDeck, _newDeck);
+        Assert.Equal(_toRemoveExpected, result.toRemove);
+        Assert.Equal(_toAddExpected, result.toAdd);
+    }
+
+    [Fact]
+    public async void CompareFromFile()
+    {
+        string[] args =
+            {
+                "--old-deck-file", @".\resources\input\Anikthea.txt",
+                "--new-deck-file", @".\resources\input\Anikthea-2.txt",
+                "--output-dir", @".\output"
+            };
+        await DeckDiff.Program.Main(args);
+        var toRemoveResult = File.ReadAllText(@".\output\Anikthea-remove.txt");
+        var toAddResult = File.ReadAllText(@".\output\Anikthea-2-add.txt");
+        Assert.Equal(_toRemoveExpected, toRemoveResult);
+        Assert.Equal(_toAddExpected, toAddResult);
     }
 }

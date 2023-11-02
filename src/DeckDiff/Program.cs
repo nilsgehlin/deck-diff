@@ -1,12 +1,12 @@
-﻿using DeckDiff;
-using System.CommandLine;
+﻿using System.CommandLine;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace DeckDiff;
 
-class Program
+public class Program
 {
-    static async Task<int> Main(string[] args)
+    public static async Task<int> Main(string[] args)
     {
         var oldDeckOption = new Option<FileInfo?>(
                   name: "--old-deck-file",
@@ -16,6 +16,10 @@ class Program
                   name: "--new-deck-file",
                   description: "The file containing the new deck list");
 
+        var outputDirOption = new Option<DirectoryInfo?>(
+                  name: "--output-dir",
+                  description: "Director to place the output files in");
+
         var rootCommand = new RootCommand(
             @"Comparing two MTG decks to find the cards to remove from the 
             old deck and to add from the new one.");
@@ -23,20 +27,20 @@ class Program
         rootCommand.AddOption(oldDeckOption);
         rootCommand.AddOption(newDeckOption);
 
-        rootCommand.SetHandler((oldDeckFile, newDeckFile) =>
+        rootCommand.SetHandler((oldDeckFile, newDeckFile, outputDir) =>
             {
-                if (oldDeckFile is not null && newDeckFile is not null)
+                if (oldDeckFile is not null && newDeckFile is not null && outputDir is not null)
                 {
                     var oldDeck = File.ReadAllText(oldDeckFile.FullName);
                     var newDeck = File.ReadAllText(newDeckFile.FullName);
 
                     (string toRemove, string toAdd) = Deck.Compare(oldDeck, newDeck);
 
-                    File.WriteAllText($"./{Path.GetFileNameWithoutExtension(oldDeckFile.Name)}-remove.txt", toRemove);
-                    File.WriteAllText($"./{Path.GetFileNameWithoutExtension(newDeckFile.Name)}-add.txt", toAdd);
+                    File.WriteAllText($"{outputDir.FullName}/{Path.GetFileNameWithoutExtension(oldDeckFile.Name)}-remove.txt", toRemove);
+                    File.WriteAllText($"{outputDir.FullName}/{Path.GetFileNameWithoutExtension(newDeckFile.Name)}-add.txt", toAdd);
                 }
             },
-            oldDeckOption, newDeckOption);
+            oldDeckOption, newDeckOption, outputDirOption);
 
         return await rootCommand.InvokeAsync(args);
     }

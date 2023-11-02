@@ -1,4 +1,7 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace DeckDiff;
 
 internal record Card(string Name, int Qty);
